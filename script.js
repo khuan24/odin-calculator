@@ -45,11 +45,13 @@ function operate(a, b, operator) {
     result = String(result)
 
     if (result < MAX_NUMBER && result.length > 10) {
-        // NEED TO CHANGE ROUNDING LOGIC
+        // rounding also needs to take account of numbers like 1.999999999 -> 2.000000000 or 829493.999 -> 
         if (result.charAt(10) > 5) {
             result = result.substring(0, 9) + String(Number(result.charAt(9)) + 1)
         }
         result = result.substring(0, 10)
+    } else if (result > MAX_NUMBER) {
+
     }
     // return a result to be displayed
     return result
@@ -67,13 +69,17 @@ function clear() {
 const numberList = document.querySelectorAll(".number")
 numberList.forEach((button) => {
     button.addEventListener("click", () => {
-        if (displayField.textContent.length == 10 && currentOp == "") {
+        if (displayField.textContent.length == 10 && firstNumber !== Number(displayField.textContent)) {
             alert("You cannot enter more than 10 digits.")
         } else {
             if (displayField.textContent == firstNumber && firstNumber !== 0) {
                 displayField.textContent = ""
             }
-    
+            
+            if (currentOp == "=") {
+                clear()
+            }
+
             displayField.textContent += button.textContent
 
             if (displayField.textContent.charAt(0) == "0" && displayField.textContent.length > 1 && !displayField.textContent.includes(".")) {
@@ -91,15 +97,20 @@ numberList.forEach((button) => {
 const operatorList = document.querySelectorAll(".operator") 
 operatorList.forEach((button) => {
     button.addEventListener(("click"), () => {
-        if (currentOp == "") {
+        if (currentOp == "" || currentOp == "=") {
             firstNumber = Number(displayField.textContent)
             currentOp = button.textContent
+            
             decimalBtn.disabled = false
-        } else if (button.textContent == "=") {
+        } else {
             secondNumber = Number(displayField.textContent)
             displayField.textContent = operate(firstNumber, secondNumber, currentOp)
-            currentOp = ""
+            
+            currentOp = button.textContent
+            firstNumber = Number(displayField.textContent)
             secondNumber = 0
+            
+            decimalBtn.disabled = false
         }
         
     })
