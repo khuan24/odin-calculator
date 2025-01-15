@@ -1,7 +1,7 @@
 const displayField = document.querySelector(".display")
 const decimalBtn = document.querySelector("#decimal")
-const MAX_NUMBER = 999999999
-const MAX_LENGTH = 10
+const MAX_NUMBER = 99999999
+const MAX_LENGTH = 9
 let firstNumber = 0
 let secondNumber = 0
 let currentOp = ""
@@ -49,7 +49,6 @@ function operate(a, b, operator) {
     result = String(result)
 
     if (result < MAX_NUMBER && result.length > 9) {
-        // rounding also needs to take account of numbers like 1.999999999 -> 2.00000000 or 829493.999 -> 
         result = String(Number(result).toFixed(8))
         if (result.charAt(MAX_LENGTH) > 5) {
             result = result.substring(0, MAX_LENGTH-1) + String(Number(result.charAt(MAX_LENGTH-1)) + 1)
@@ -140,6 +139,15 @@ backspaceBtn.addEventListener("click", () => {
 
     if (displayField.textContent == "") {
         displayField.textContent = "0"
+    }
+})
+
+const signBtn = document.querySelector("#sign")
+signBtn.addEventListener("click", () => {
+    if (displayField.textContent.charAt(0) == "-") {
+        displayField.textContent = displayField.textContent.substring(1, MAX_LENGTH)
+    } else if (displayField.textContent != "0") {
+        displayField.textContent = "-" + displayField.textContent
     }
 })
 
