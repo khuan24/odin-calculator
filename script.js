@@ -1,4 +1,6 @@
 const displayField = document.querySelector(".display")
+const decimalBtn = document.querySelector("#decimal")
+const MAX_NUMBER = 9999999999
 let firstNumber = 0
 let secondNumber = 0
 let currentOp = ""
@@ -24,7 +26,7 @@ function divide(a, b) {
 }
 
 function operate(a, b, operator) {
-    // called when =, +, -, ×, or / is pressed
+    // called when =, +, -, ×, or ÷ is pressed
     let result = 0
     switch (operator) {
         case "+": 
@@ -36,10 +38,19 @@ function operate(a, b, operator) {
         case "×":
             result = multiply(a,b)
             break;
-        case "/":
+        case "÷":
             result = divide(a,b)
     }
+    console.log(result)
+    result = String(result)
 
+    if (result < MAX_NUMBER && result.length > 10) {
+        // NEED TO CHANGE ROUNDING LOGIC
+        if (result.charAt(10) > 5) {
+            result = result.substring(0, 9) + String(Number(result.charAt(9)) + 1)
+        }
+        result = result.substring(0, 10)
+    }
     // return a result to be displayed
     return result
 }
@@ -49,33 +60,30 @@ function clear() {
     firstNumber = 0
     secondNumber = 0
     currentOp = ""
-    const decimalBtn = document.querySelector("#decimal")
     decimalBtn.disabled = false
 }
-
-// function enableAllButtons() {
-//     const btnList = document.querySelector("button")
-//     btnList.forEach((button) => {
-//         button.disabled = false
-//     })
-// }
 
 // listen for numbers to be pressed then display them
 const numberList = document.querySelectorAll(".number")
 numberList.forEach((button) => {
     button.addEventListener("click", () => {
-        if (displayField.textContent.length == 10) {
+        if (displayField.textContent.length == 10 && currentOp == "") {
             alert("You cannot enter more than 10 digits.")
         } else {
-            if (displayField.textContent == "0" || displayField.textContent == firstNumber) {
+            if (displayField.textContent == firstNumber && firstNumber !== 0) {
                 displayField.textContent = ""
             }
     
             displayField.textContent += button.textContent
+
+            if (displayField.textContent.charAt(0) == "0" && displayField.textContent.length > 1 && !displayField.textContent.includes(".")) {
+                displayField.textContent = displayField.textContent.substring(1,2)
+            }
     
             if (button.textContent == ".") {
                 button.disabled = true
-            }
+            } 
+
         }
     })
 })
@@ -86,15 +94,13 @@ operatorList.forEach((button) => {
         if (currentOp == "") {
             firstNumber = Number(displayField.textContent)
             currentOp = button.textContent
-            clearDisplay = true
+            decimalBtn.disabled = false
         } else if (button.textContent == "=") {
             secondNumber = Number(displayField.textContent)
             displayField.textContent = operate(firstNumber, secondNumber, currentOp)
             currentOp = ""
             secondNumber = 0
         }
-        
-    
         
     })
 })
