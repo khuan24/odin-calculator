@@ -1,9 +1,12 @@
 const displayField = document.querySelector(".display")
 const decimalBtn = document.querySelector("#decimal")
-const MAX_NUMBER = 9999999999
+const MAX_NUMBER = 999999999
+const MAX_LENGTH = 10
 let firstNumber = 0
 let secondNumber = 0
 let currentOp = ""
+let resetDisplay = false
+let backspaceAccessOn = true
 
 function add(a, b) {
     return a+b
@@ -21,7 +24,7 @@ function divide(a, b) {
     if (b == 0) {
         displayField.textContent("Undefined, cannot divide by 0")
     } else {
-        return a/b // will have to round to 10 digits
+        return a/b 
     }
 }
 
@@ -41,17 +44,20 @@ function operate(a, b, operator) {
         case "÷":
             result = divide(a,b)
     }
+    
     console.log(result)
     result = String(result)
 
-    if (result < MAX_NUMBER && result.length > 10) {
-        // rounding also needs to take account of numbers like 1.999999999 -> 2.000000000 or 829493.999 -> 
-        if (result.charAt(10) > 5) {
-            result = result.substring(0, 9) + String(Number(result.charAt(9)) + 1)
+    if (result < MAX_NUMBER && result.length > 9) {
+        // rounding also needs to take account of numbers like 1.999999999 -> 2.00000000 or 829493.999 -> 
+        result = String(Number(result).toFixed(8))
+        if (result.charAt(MAX_LENGTH) > 5) {
+            result = result.substring(0, MAX_LENGTH-1) + String(Number(result.charAt(MAX_LENGTH-1)) + 1)
         }
-        result = result.substring(0, 10)
+        result = result.substring(0, MAX_LENGTH)
     } else if (result > MAX_NUMBER) {
-
+        alert("This resulting number is too big. Try another calculation.")
+        result = "0"
     }
     // return a result to be displayed
     return result
@@ -69,28 +75,31 @@ function clear() {
 const numberList = document.querySelectorAll(".number")
 numberList.forEach((button) => {
     button.addEventListener("click", () => {
-        if (displayField.textContent.length == 10 && firstNumber !== Number(displayField.textContent)) {
-            alert("You cannot enter more than 10 digits.")
-        } else {
-            if (displayField.textContent == firstNumber && firstNumber !== 0) {
-                displayField.textContent = ""
-            }
-            
-            if (currentOp == "=") {
-                clear()
-            }
-
-            displayField.textContent += button.textContent
-
-            if (displayField.textContent.charAt(0) == "0" && displayField.textContent.length > 1 && !displayField.textContent.includes(".")) {
-                displayField.textContent = displayField.textContent.substring(1,2)
-            }
-    
-            if (button.textContent == ".") {
-                button.disabled = true
-            } 
-
+        if (resetDisplay) {
+            displayField.textContent = ""
+            resetDisplay = false
+            backspaceAccessOn = true
         }
+        
+        if (currentOp == "=") {
+            clear()
+        }
+
+        displayField.textContent += button.textContent
+
+        if (displayField.textContent.length > MAX_LENGTH) {
+            displayField.textContent = displayField.textContent.substring(0, MAX_LENGTH)
+            alert("You've reached the maximum limit of digits allowed.")
+        }
+
+        if (displayField.textContent.charAt(0) == "0" && displayField.textContent.length > 1 && !displayField.textContent.includes(".")) {
+            displayField.textContent = displayField.textContent.substring(1,2)
+        }
+
+        if (button.textContent == ".") {
+            button.disabled = true
+        } 
+        
     })
 })
 
@@ -102,6 +111,7 @@ operatorList.forEach((button) => {
             currentOp = button.textContent
             
             decimalBtn.disabled = false
+            resetDisplay = true
         } else {
             secondNumber = Number(displayField.textContent)
             displayField.textContent = operate(firstNumber, secondNumber, currentOp)
@@ -111,6 +121,8 @@ operatorList.forEach((button) => {
             secondNumber = 0
             
             decimalBtn.disabled = false
+            resetDisplay = true
+            backspaceAccessOn = false
         }
         
     })
@@ -119,9 +131,15 @@ operatorList.forEach((button) => {
 const clearBtn = document.querySelector("#clear") 
 clearBtn.addEventListener("click", clear)
 
-// listen for operators to be pressed 
 
-// disable operator buttons when 
-// 1) no numbers have been pressed
-// 2) an operator has already been pressed
+const backspaceBtn = document.querySelector("#backspace")
+backspaceBtn.addEventListener("click", () => {
+    if (displayField.textContent !== "0" && backspaceAccessOn) {
+        displayField.textContent = displayField.textContent.substring(0, displayField.textContent.length-1)
+    } 
+
+    if (displayField.textContent == "") {
+        displayField.textContent = "0"
+    }
+})
 
