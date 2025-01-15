@@ -1,6 +1,7 @@
 const displayField = document.querySelector(".display")
 const decimalBtn = document.querySelector("#decimal")
 const MAX_NUMBER = 99999999
+const MIN_NUMBER = 0.00000001
 const MAX_LENGTH = 9
 let firstNumber = 0
 let secondNumber = 0
@@ -22,7 +23,7 @@ function multiply(a, b) {
 
 function divide(a, b) {
     if (b == 0) {
-        displayField.textContent("Undefined, cannot divide by 0")
+        return "bzzt"
     } else {
         return a/b 
     }
@@ -46,20 +47,28 @@ function operate(a, b, operator) {
     }
     
     console.log(result)
-    result = String(result)
+    result = round(result)
 
-    if (result < MAX_NUMBER && result.length > 9) {
-        result = String(Number(result).toFixed(8))
-        if (result.charAt(MAX_LENGTH) > 5) {
-            result = result.substring(0, MAX_LENGTH-1) + String(Number(result.charAt(MAX_LENGTH-1)) + 1)
-        }
-        result = result.substring(0, MAX_LENGTH)
-    } else if (result > MAX_NUMBER) {
-        alert("This resulting number is too big. Try another calculation.")
-        result = "0"
-    }
-    // return a result to be displayed
     return result
+}
+
+function round(n) {
+    n = String(n)
+    if (n < MIN_NUMBER) {
+        alert("The resulting number is too small. Try another calculation.")
+        n = "0"
+    } else if (n < MAX_NUMBER && n.length > 9) {
+        n = String(Number(n).toFixed(8))
+        if (n.charAt(MAX_LENGTH) > 5) {
+            n = n.substring(0, MAX_LENGTH-1) + String(Number(n.charAt(MAX_LENGTH-1)) + 1)
+        }
+        n = n.substring(0, MAX_LENGTH)
+    } else if (n > MAX_NUMBER) {
+        alert("This resulting number is too big. Try another calculation.")
+        n = "0"
+    } 
+
+    return n
 }
 
 function clear() {
@@ -148,6 +157,13 @@ signBtn.addEventListener("click", () => {
         displayField.textContent = displayField.textContent.substring(1, MAX_LENGTH)
     } else if (displayField.textContent != "0") {
         displayField.textContent = "-" + displayField.textContent
+    }
+})
+
+const percentBtn = document.querySelector("#percent")
+percentBtn.addEventListener("click", () => {
+    if (displayField.textContent != "0") {
+        displayField.textContent = round(Number(displayField.textContent) / 100)
     }
 })
 
