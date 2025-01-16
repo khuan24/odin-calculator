@@ -184,3 +184,47 @@ percentBtn.addEventListener("click", () => {
     }
 })
 
+// add keyboard support
+document.addEventListener('keydown', (event) => {
+
+    if (event.key == "1") {
+        document.querySelector("#one").click()
+    } else if (event.key == "2") {
+        document.querySelector("#two").click()
+    } else if (event.key == "3") {
+        document.querySelector("#three").click()
+    } else if (event.key == "4") {
+        document.querySelector("#four").click()
+    } else if (event.key == "5") {
+        document.querySelector("#five").click()
+    } else if (event.key == "6") {
+        document.querySelector("#six").click()
+    } else if (event.key == "7") {
+        document.querySelector("#seven").click()
+    } else if (event.key == "8") {
+        document.querySelector("#eight").click()
+    } else if (event.key == "9") {
+        document.querySelector("#nine").click()
+    } else if (event.key == "0") {
+        document.querySelector("#zero").click()
+    } else if (event.key == "+") {
+        document.querySelector("#add").click()
+    } else if (event.key == "-") {
+        document.querySelector("#subtract").click()
+    } else if (event.key == "*") {
+        document.querySelector("#multiply").click()
+    } else if (event.key == "/") {
+        document.querySelector("#divide").click()
+    } else if (event.key == ".") {
+        document.querySelector("#decimal").click()
+    } else if (event.key == "=" || event.key == "Enter") {
+        document.querySelector("#equal").click()
+    } else if (event.key == "Backspace") {
+        document.querySelector("#backspace").click()
+    } else if (event.key == "%") {
+        document.querySelector("#percent").click()
+    } else if (event.key == "c" || event.key == "C") {
+        document.querySelector("#clear").click()
+    }
+})
+
