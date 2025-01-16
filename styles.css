@@ -15,7 +15,7 @@ button {
     font-size: 42px;
     font-weight: bold;
     margin: 6px 3px;
-    padding: 15px;
+    padding: 15px 15px 12px 15px;
     width: 100px;
     height: 80px;
     border-radius: 60px;
@@ -78,5 +78,11 @@ button {
 
 .row > button:last-child {
     background-color: orange;
+}
+
+#backspace {
+    font-size: 60px;
+    padding-top: 3px;
+    padding-left: 12px;
 }
 
