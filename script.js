@@ -1,13 +1,17 @@
 const displayField = document.querySelector(".display")
 const decimalBtn = document.querySelector("#decimal")
+
 const MAX_NUMBER = 99999999
 const MIN_NUMBER = 0.00000001
 const MAX_LENGTH = 9
+
 let firstNumber = 0
 let secondNumber = 0
 let currentOp = ""
+
+let buttonJustPressed = document.querySelector("#clear")
 let resetDisplay = false
-let backspaceAccessOn = true
+let modifyAccessOn = true
 
 function add(a, b) {
     return a+b
@@ -46,15 +50,13 @@ function operate(a, b, operator) {
             result = divide(a,b)
     }
     
-    console.log(result)
     result = round(result)
-
     return result
 }
 
 function round(n) {
     n = String(n)
-    if (n < MIN_NUMBER) {
+    if ((n > 0 && n < MIN_NUMBER) || (n < 0 && n > -MIN_NUMBER)) {
         alert("The resulting number is too small. Try another calculation.")
         n = "0"
     } else if (n < MAX_NUMBER && n.length > 9) {
@@ -77,16 +79,18 @@ function clear() {
     secondNumber = 0
     currentOp = ""
     decimalBtn.disabled = false
+    buttonJustPressed = document.querySelector("#clear")
 }
 
-// listen for numbers to be pressed then display them
 const numberList = document.querySelectorAll(".number")
 numberList.forEach((button) => {
     button.addEventListener("click", () => {
+        buttonJustPressed = button
+
         if (resetDisplay) {
             displayField.textContent = ""
             resetDisplay = false
-            backspaceAccessOn = true
+            modifyAccessOn = true
         }
         
         if (currentOp == "=") {
@@ -117,22 +121,33 @@ operatorList.forEach((button) => {
         if (currentOp == "" || currentOp == "=") {
             firstNumber = Number(displayField.textContent)
             currentOp = button.textContent
-            
-            decimalBtn.disabled = false
-            resetDisplay = true
-        } else {
+
+            buttonJustPressed = button
+            button.classList.add("activated")
+        } else if (buttonJustPressed.classList.contains("operator")) {
+            document.querySelector(".activated").classList.remove("activated")
+            currentOp = button.textContent
+            button.classList.add("activated")
+        } else if (buttonJustPressed.classList.contains("number")) {
             secondNumber = Number(displayField.textContent)
             displayField.textContent = operate(firstNumber, secondNumber, currentOp)
             
             currentOp = button.textContent
+            buttonJustPressed = button
+            
+            document.querySelector(".activated").classList.remove("activated")
+            if (currentOp != "=") {
+                button.classList.add("activated")
+            }
+            
             firstNumber = Number(displayField.textContent)
             secondNumber = 0
             
-            decimalBtn.disabled = false
-            resetDisplay = true
-            backspaceAccessOn = false
-        }
+            modifyAccessOn = false
+        } 
         
+        decimalBtn.disabled = false
+        resetDisplay = true
     })
 })
 
@@ -142,7 +157,7 @@ clearBtn.addEventListener("click", clear)
 
 const backspaceBtn = document.querySelector("#backspace")
 backspaceBtn.addEventListener("click", () => {
-    if (displayField.textContent !== "0" && backspaceAccessOn) {
+    if (displayField.textContent !== "0" && modifyAccessOn) {
         displayField.textContent = displayField.textContent.substring(0, displayField.textContent.length-1)
     } 
 
@@ -153,16 +168,18 @@ backspaceBtn.addEventListener("click", () => {
 
 const signBtn = document.querySelector("#sign")
 signBtn.addEventListener("click", () => {
-    if (displayField.textContent.charAt(0) == "-") {
-        displayField.textContent = displayField.textContent.substring(1, MAX_LENGTH)
-    } else if (displayField.textContent != "0") {
-        displayField.textContent = "-" + displayField.textContent
+    if (modifyAccessOn) {
+        if (displayField.textContent.charAt(0) == "-") {
+            displayField.textContent = displayField.textContent.substring(1, MAX_LENGTH)
+        } else if (displayField.textContent != "0") {
+            displayField.textContent = "-" + displayField.textContent
+        }
     }
 })
 
 const percentBtn = document.querySelector("#percent")
 percentBtn.addEventListener("click", () => {
-    if (displayField.textContent != "0") {
+    if (modifyAccessOn && displayField.textContent != "0") {
         displayField.textContent = round(Number(displayField.textContent) / 100)
     }
 })
